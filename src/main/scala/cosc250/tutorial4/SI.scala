@@ -4,15 +4,31 @@ import scala.language.{implicitConversions, postfixOps}
 
 object SI extends App {
 
-  // In this tutorial, we'll play around with implicits to see if we can get
-  // equations for Volts, Watts, Amps, and Ohms working.
-  // SI units is actually quite a hard problem, so we're not going to go very far
-  // but we'll use it as a little example
+  /*
+     In this tutorial, we'll play around with implicits to see if we can get
+     an equation for Volts, Watts, Amps, and Ohms working.
+
+     SI units is actually quite a hard problem, so we're not going to go very far.
+     We're just going to get the equation from the lecture working.
+
+     First, we'll do an example with prefixes (eg, "milli" for thousandths), where
+     I've provided the class but not the implicit conversion function.
+
+     Then we'll do one that sets up equations with units -- I've written the
+     machinery for handling the units, but you'll need to define a class and an
+     implicit conversion so that you can make things like
+     3.pico.Watts
+     compile
+
+   */
 
 
-  // First, let's get prefixes working. Let's declare a class that has various prefixes
-  // defined
 
+  /*
+      First, let's get prefixes working.
+   */
+
+  /** Let's declare a class that has various prefixes */
   class Prefix(d:Double) {
     def pico:Double = d / 1000000000000L
     def nano:Double = d / 1000000000
@@ -32,7 +48,7 @@ object SI extends App {
   println("1 deci * 2 hecta is" + (new Prefix(1).deci * new Prefix(2).hecta))
 
 
-  // TASK: Define an implicit conversion, so you can make these work:
+  // YOUR TASK: Define an implicit conversion, so you can make these work:
   // println("1 deci * 2 hecta is" + (1.deci * 2.hecta))
   // println("Is 1 kilo * 1 giga == 1 tera? " + (1.kilo * 1.giga == 1.tera))
 
@@ -44,7 +60,7 @@ object SI extends App {
    */
 
 
-  /** SIUnit represents a raw unit. We'll just have three */
+  /** SIUnit represents a raw unit. We'll just have two */
   trait SIUnit
   case object Volt extends SIUnit
   case object Amp extends SIUnit
@@ -59,12 +75,13 @@ object SI extends App {
     */
   case class UnitEq(units:Map[SIUnit, Int]) {
 
-    // Multiplies this unit equation by another
+    /** Multiplies this unit equation by another */
     def * (u:UnitEq):UnitEq = {
-      // get the keySet from both maps, so we have all the units
+
+      // get the keySet from both maps, so we have all the units in both equations
       val keys = units.keySet ++ u.units.keySet
 
-      // for all the keys in the map, get the value out and sum them
+      // for all the keys, get the value out of both maps and sum them
       // filter out the ones where they sum to zero
       val newVals = for {
         k <- keys
@@ -75,7 +92,7 @@ object SI extends App {
       UnitEq(newVals.toMap)
     }
 
-    // 1 divided by this equation
+    /** 1 divided by this equation */
     def inverse:UnitEq = {
       val newVals = for {
         (k,v) <- units
@@ -84,9 +101,13 @@ object SI extends App {
       UnitEq(newVals)
     }
 
+    /** To divide by another equation, we multiply by its inverse */
     def / (u:UnitEq):UnitEq = this * u.inverse
 
-    // Produces a String like  m^1 s^-1
+    /**
+      * Override toString to produce prettier output
+      * Produces a String like m^1 s^-1
+      */
     override def toString:String = {
       val seqStr = for {
         (k, v) <- units

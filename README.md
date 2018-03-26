@@ -1,89 +1,26 @@
 # Tutorial, week 4: A DSL challenge
 
-This week's tutorial doesn't come with a repository or a set of tests. For this week, we're going to move up to a more open ended design challenge (as that's what you face in Assignment 2).
+This week's tutorial is designed to be optional -- there's an assignment due soon.
 
-And since this week's lectures have covered Domain Specific Languages, let's ask you to create one -- based on the idea in the lecture.
+It's quite short, but will ask you to exercise what you've learnt about implicit 
+conversions to create a *domain specific language*.
 
-There is a repository at [https://github.com/UNEcosc250/tutorial_units_of_measurement](https://github.com/UNEcosc250/tutorial_units_of_measurement)
-that contains a mostly empty project, with mostly empty tests, if you're looking for a blank template to start from.
+In this tutorial, we'll play around with implicits to see if we can get
+an equation for Volts, Watts, Amps, and Ohms working.
+SI units is actually quite a hard problem, so we're not going to go very far.
+We're just going to get the equation from the lecture working.
 
-## Units of Measurement
+First, we'll do an example with prefixes (eg, "milli" for thousandths), where
+I've provided the class but not the implicit conversion function.
 
-Units of measurement are fairly well defined -- there is an [SI](https://en.wikipedia.org/wiki/International_System_of_Units) standard that defines seven base measures, and the remaining units are derived from combinations of these.
+Then we'll do one that sets up equations with units -- I've written the
+machinery for handling the units, but you'll need to define a class and an
+implicit conversion so that you can make things like
+3.pico.Watts
+compile
 
-I would like you to create a module (Object, and child classes) that allows us to say things like:
-
-
-```scala
-val d:Distance = 8.m
-```
-
-or
-
-```scala
-val v:Velocity = (8.k.m) / (3.hr)
-```
-
-## Some hints
-
-There's not just one solution to this problem, but let's give some hints for one way of doing it:
-
-* You'll need a trait for the units.
-* Start by creating the base units. And probably start with kg, m, and s. (Get it working for Newtonian physics)
-* You'll need composite units that are Divides; you can get away without a Multiplies if the Divides takes several numerators and can have an empty denominator
-* You'll need to simplify the units where there's the same unit on both sides of a divide
-* You'll need type aliases for the composite units
-* You'll need a case class for a measurement (a value and a unit)
-* You'll need to define operator methods for your measurements too
-* You'll need an implicit class or implicit conversion to give numbers the "k", "m" etc methods
-* You'll probably need an intervening class for if someone just says `(8.k)`
-
-And now let's delve further into some of the components you'll need...
-
-## Implicit classes
-
-Implicit conversions and implicit classes allow us to effectively give existing types new methods. For example:
-
-```scala
-implicit class ReadyForUnit(val n:Int) extends AnyVal {
-
-  def m = ???
-
-}
-```
-
-You can say things like:
-
-```scala
-8.m
-```
-
-## Methods that look like operators
-
-In Scala, methods can be given symbolic names like `+` and `/`
-
-So for example, this would allow measurements to be added, and type-check that the units are the same
-
-```scala
-case class Measurement[U](value: Double, unit:U) {
-
-  def +(otherValue:Measurement[U)) = ???
-
-}
-```
-
-If we like, for this exercise we can just have measurements hold Doubles.
-But if we wanted, we could let them be defined for any Numeric type.
-But `Numeric` isn't a superclass, it's a typeclass, so we would need to define our measurement
-to accept "any type that is a numeric", like this:
-
-```scala
-  case class Measurement[T : Numeric, U](value:T) {
-    def +[TT : Numeric](other:Measurement[TT, U]) = ???
-  }
-
-```
-
-(And notice that the + method now accepts another type `TT` because we might add an `Int` measurement to a `Double` measurement)
+As we need to implement the language to get your code to compile, it doesn't use unit
+tests. (If the code doesn't compile, tests can't run anyway). Instead, the SI class 
+extends App so you can run it directly.
 
 
