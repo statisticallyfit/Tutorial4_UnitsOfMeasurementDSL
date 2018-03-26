@@ -141,4 +141,39 @@ object SI extends App {
   // 12.0 Volt^1 Amp^1
 
 
+  /*
+     Part 3: Here's one someone else made earlier.
+
+     In our code, to keep things short, all unit measurements are of type WithUnits.
+     So, 1.Volt + 2.Amps gives an error at runtime.
+
+     But we could create types for Volts, Amps, etc, so this would be checked statically
+     at compile time.
+
+     That's probably too long an exercise for a tutorial -- there would be a lot of
+     different unit combinations, so let's just demo one someone else made earlier
+
+     This is scoped inside a block to prevent the import from leaking into the other
+     work.
+   */
+
+
+  {
+    import squants.electro.ElectricPotentialConversions._
+    import squants.electro.ElectricalResistanceConversions._
+
+    val volts = 3 V
+    val resistance = 1 ohms
+
+    // val current = volts / resistance
+    // println(s"Current was $current")
+
+    // This won't even compile
+    // val current = volts + resistance
+
+
+  }
+
+
+
 }

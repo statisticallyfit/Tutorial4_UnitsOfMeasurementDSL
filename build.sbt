@@ -5,5 +5,6 @@ lazy val root = (project in file(".")).
     scalaVersion := "2.12.1"
   )
 
+libraryDependencies += "org.typelevel"  %% "squants"  % "1.3.0"
 libraryDependencies += "org.scalactic" %% "scalactic" % "3.0.1"
 libraryDependencies += "org.scalatest" %% "scalatest" % "3.0.1" % "test"
