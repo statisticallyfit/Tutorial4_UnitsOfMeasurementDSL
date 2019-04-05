@@ -31,3 +31,7 @@ vagrant/.bashrc
 vagrant/sbt-launch.jar
 
 tmp
+
+project/.boot/
+project/.ivy/
+project/.sbtboot/
